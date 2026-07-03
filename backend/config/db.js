@@ -1,10 +1,12 @@
+require('dotenv').config();
 const mysql = require('mysql2/promise');
 
 const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root', // Asumiremos root para pruebas locales
-    password: '', // Asumiremos sin contraseña o cambiar según config del usuario
-    database: 'proyectodeadpan',
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root', 
+    password: process.env.DB_PASSWORD || '', 
+    database: process.env.DB_NAME || 'proyectodeadpan',
+    port: process.env.DB_PORT || 3306,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
