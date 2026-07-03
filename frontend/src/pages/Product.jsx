@@ -81,9 +81,29 @@ const Product = () => {
     const [side, setSide] = useState('front'); // 'front' o 'back'
     const [shirtColor, setShirtColor] = useState('white'); // 'black', 'white', 'gray'
     const [designs, setDesigns] = useState({ front: [], back: [] });
-    const [basePrice] = useState(12.00);
+    const [basePrice, setBasePrice] = useState(12.00);
     const [totalPrice, setTotalPrice] = useState(12.00);
     const [priceAlert, setPriceAlert] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
+    
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+    useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                const res = await fetch(`${API_URL}/products/${id}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    const price = Number(data.base_price);
+                    setBasePrice(price);
+                    setTotalPrice(price);
+                }
+            } catch (err) {
+                console.error("Error fetching product", err);
+            }
+        };
+        fetchProduct();
+    }, [id, API_URL]);
     
     const fileInputRef = useRef(null);
 
@@ -165,7 +185,7 @@ const Product = () => {
         setDesigns(updatedDesigns);
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!user) {
             alert('Debes iniciar sesión para comprar.');
             navigate('/login');
@@ -177,8 +197,34 @@ const Product = () => {
             return;
         }
 
-        alert(`¡Orden guardada! Camisa: ${shirtColor}. Total a pagar: $${totalPrice.toFixed(2)}`);
-        navigate('/catalog');
+        setIsSaving(true);
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch(`${API_URL}/orders`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    totalPrice: totalPrice,
+                    details: {
+                        shirtColor,
+                        designs
+                    }
+                })
+            });
+
+            if (!res.ok) throw new Error('Error al guardar la orden');
+            
+            alert(`¡Orden guardada con éxito en el servidor! Camisa: ${shirtColor}. Total a pagar: $${totalPrice.toFixed(2)}`);
+            navigate('/catalog');
+        } catch (error) {
+            console.error(error);
+            alert('Hubo un error al procesar tu orden.');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const getSizeStyles = (size) => {
@@ -279,8 +325,8 @@ const Product = () => {
                         )}
 
                         <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto' }}>
-                            <button className="btn-primary" style={{ flex: 2 }} onClick={handleSave}>
-                                {user ? 'Guardar y Comprar' : 'Inicia Sesión'}
+                            <button className="btn-primary" style={{ flex: 2 }} onClick={handleSave} disabled={isSaving}>
+                                {isSaving ? 'Guardando...' : (user ? 'Guardar y Comprar' : 'Inicia Sesión')}
                             </button>
                             <button className="btn-secondary" style={{ flex: 1 }} onClick={() => navigate('/catalog')}>
                                 Cancelar

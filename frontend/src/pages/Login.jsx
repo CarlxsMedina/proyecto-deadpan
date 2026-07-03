@@ -7,19 +7,36 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
+    const [error, setError] = useState('');
     const { login } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Simulación de login/registro ya que el backend podría no estar corriendo
-        // En producción se haría un fetch a /api/auth/login o /api/auth/register
+        setError('');
+
+        const endpoint = isLogin ? '/auth/login' : '/auth/register';
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
         
-        const fakeUser = { id: 1, username: isLogin ? 'UsuarioDemo' : username, email };
-        const fakeToken = 'eyJh...fake...token';
-        
-        login(fakeToken, fakeUser);
-        navigate('/catalog');
+        try {
+            const res = await fetch(`${API_URL}${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, username: isLogin ? undefined : username })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.message || 'Error en la autenticación');
+            }
+            
+            // Login exitoso, guardamos el token
+            login(data.token, data.user);
+            navigate('/catalog');
+        } catch (err) {
+            setError(err.message);
+        }
     };
 
     return (
@@ -28,6 +45,8 @@ const Login = () => {
                 <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>
                     {isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'}
                 </h2>
+                
+                {error && <div style={{ color: '#ff6b6b', background: 'rgba(255, 107, 107, 0.1)', padding: '0.8rem', borderRadius: '4px', marginBottom: '1rem', textAlign: 'center' }}>{error}</div>}
                 
                 <form onSubmit={handleSubmit}>
                     {!isLogin && (
