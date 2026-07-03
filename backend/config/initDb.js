@@ -35,14 +35,20 @@ const initDb = async () => {
             )
         `);
 
-        // Insertar un producto base si no hay ninguno
+        // Insertar productos base si no existen (asumiendo que el nombre es único, si no, se insertarán)
+        // Para simplificar, simplemente los insertamos. En un entorno real se manejaría mejor.
+        // Haremos un select para ver cuántos hay.
         const [rows] = await pool.query('SELECT COUNT(*) as count FROM products');
-        if (rows[0].count === 0) {
+        if (rows[0].count < 3) {
+            // Borrar existentes para reinsertar limpio
+            await pool.query('DELETE FROM products');
             await pool.query(`
-                INSERT INTO products (name, description, base_price) 
-                VALUES ('Camiseta Personalizable Básica', 'Camiseta de algodón 100%. Selecciona tu color, corte y sube tu diseño.', 12.00)
+                INSERT INTO products (name, description, base_price) VALUES 
+                ('Camiseta Personalizable Básica', 'Camiseta de algodón 100%. Selecciona tu color, corte y sube tu diseño.', 12.00),
+                ('Camiseta Cuello V', 'Corte moderno con cuello en V, ideal para diseños elegantes.', 14.00),
+                ('Camiseta Oversize', 'Estilo urbano holgado, perfecta para diseños grandes y llamativos.', 16.00)
             `);
-            console.log("Producto por defecto insertado.");
+            console.log("Productos por defecto insertados/actualizados.");
         }
 
         console.log("Base de datos inicializada correctamente.");
