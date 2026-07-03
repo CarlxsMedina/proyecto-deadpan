@@ -1,6 +1,7 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { CartContext } from '../context/CartContext';
 
 const DraggableDesign = ({ design, getSizeStyles, onDragStop }) => {
     const [position, setPosition] = useState(design.position || { x: 0, y: 0 });
@@ -75,6 +76,7 @@ const DraggableDesign = ({ design, getSizeStyles, onDragStop }) => {
 const Product = () => {
     const { id } = useParams();
     const { user } = useContext(AuthContext);
+    const { addToCart } = useContext(CartContext);
     const navigate = useNavigate();
 
     // Estado del personalizador
@@ -84,7 +86,6 @@ const Product = () => {
     const [basePrice, setBasePrice] = useState(12.00);
     const [totalPrice, setTotalPrice] = useState(12.00);
     const [priceAlert, setPriceAlert] = useState('');
-    const [isSaving, setIsSaving] = useState(false);
     
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -185,46 +186,20 @@ const Product = () => {
         setDesigns(updatedDesigns);
     };
 
-    const handleSave = async () => {
-        if (!user) {
-            alert('Debes iniciar sesión para comprar.');
-            navigate('/login');
-            return;
-        }
-        
+    const handleAddToCart = () => {
         if (designs.front.length === 0 && designs.back.length === 0) {
             alert('Por favor añade al menos un diseño.');
             return;
         }
 
-        setIsSaving(true);
-        try {
-            const token = localStorage.getItem('token');
-            const res = await fetch(`${API_URL}/orders`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    totalPrice: totalPrice,
-                    details: {
-                        shirtColor,
-                        designs
-                    }
-                })
-            });
+        const productToAdd = {
+            id,
+            shirtColor,
+            designs,
+            totalPrice
+        };
 
-            if (!res.ok) throw new Error('Error al guardar la orden');
-            
-            alert(`¡Orden guardada con éxito en el servidor! Camisa: ${shirtColor}. Total a pagar: $${totalPrice.toFixed(2)}`);
-            navigate('/catalog');
-        } catch (error) {
-            console.error(error);
-            alert('Hubo un error al procesar tu orden.');
-        } finally {
-            setIsSaving(false);
-        }
+        addToCart(productToAdd);
     };
 
     const getSizeStyles = (size) => {
@@ -325,11 +300,11 @@ const Product = () => {
                         )}
 
                         <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto' }}>
-                            <button className="btn-primary" style={{ flex: 2 }} onClick={handleSave} disabled={isSaving}>
-                                {isSaving ? 'Guardando...' : (user ? 'Guardar y Comprar' : 'Inicia Sesión')}
+                            <button className="btn-primary" style={{ flex: 2 }} onClick={handleAddToCart}>
+                                Añadir al Carrito
                             </button>
                             <button className="btn-secondary" style={{ flex: 1 }} onClick={() => navigate('/catalog')}>
-                                Cancelar
+                                Volver
                             </button>
                         </div>
                     </div>
