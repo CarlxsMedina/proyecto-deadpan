@@ -1,31 +1,51 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowRight, Infinity as InfinityIcon } from 'lucide-react';
 
 const Home = () => {
     return (
-        <div className="container animate-fade-in">
-            <section className="hero">
-                <h1>Expresa tu estilo <br/> <span style={{ color: 'var(--primary)' }}>Sin Límites</span></h1>
-                <p>Crea camisetas únicas con tus propios diseños. Calidad premium, impresión perfecta. ProyectoDeadpan es tu lienzo.</p>
-                <Link to="/catalog" className="btn-primary" style={{ fontSize: '1.2rem', padding: '1rem 2rem' }}>
-                    Empezar a Crear
-                </Link>
-            </section>
+        <div style={{ backgroundColor: '#000000', minHeight: '100vh', width: '100%' }}>
+            <section className="hero animate-fade-in">
+                {/* Overlay oscuro si usamos una imagen de fondo real */}
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.2)', zIndex: 1 }}></div>
+                
+                <div className="hero-content">
+                    <h1 className="hero-huge-text">
+                        <span className="hero-vestimos">VESTIMOS</span>
+                        <span className="hero-identidades">IDENTIDADES.</span>
+                    </h1>
+                    
+                    <p>
+                        Camisetas premium con estampado DTF. Ediciones limitadas para 
+                        quienes entienden que lo que llevas puesto también habla.
+                    </p>
+                    
+                    <div className="hero-buttons">
+                        <Link to="/catalog" className="btn-hero-primary">
+                            EXPLORAR COLECCIÓN <ArrowRight size={18} />
+                        </Link>
+                        <Link to="#" className="btn-hero-secondary">
+                            NUESTRA HISTORIA
+                        </Link>
+                    </div>
 
-            <section className="glass-panel" style={{ marginTop: '4rem', textAlign: 'center' }}>
-                <h2>¿Por qué elegirnos?</h2>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', marginTop: '2rem', flexWrap: 'wrap' }}>
-                    <div style={{ maxWidth: '300px' }}>
-                        <h3 style={{ color: 'var(--primary)', marginBottom: '1rem' }}>Calidad Superior</h3>
-                        <p style={{ color: 'var(--text-muted)' }}>Utilizamos algodón 100% y técnicas de impresión de última generación para asegurar que tu diseño dure.</p>
-                    </div>
-                    <div style={{ maxWidth: '300px' }}>
-                        <h3 style={{ color: 'var(--primary)', marginBottom: '1rem' }}>Personalización Total</h3>
-                        <p style={{ color: 'var(--text-muted)' }}>Sube tu diseño, ajústalo, elige el tamaño y la ubicación exacta. Tu camiseta, tus reglas.</p>
-                    </div>
-                    <div style={{ maxWidth: '300px' }}>
-                        <h3 style={{ color: 'var(--primary)', marginBottom: '1rem' }}>Precios Justos</h3>
-                        <p style={{ color: 'var(--text-muted)' }}>Camisetas desde $12. Solo pagas extra si necesitas diseños muy grandes o múltiples impresiones.</p>
+                    <div className="hero-stats">
+                        <div className="stat-item">
+                            <h3>04</h3>
+                            <p>Drops al año</p>
+                        </div>
+                        <div className="stat-item">
+                            <h3>12K+</h3>
+                            <p>Comunidad global</p>
+                        </div>
+                        <div className="stat-item">
+                            <h3>100%</h3>
+                            <p>Algodón premium</p>
+                        </div>
+                        <div className="stat-item">
+                            <h3><InfinityIcon size={36} strokeWidth={3} /></h3>
+                            <p>Diseños únicos</p>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -34,3 +54,4 @@ const Home = () => {
 };
 
 export default Home;
+

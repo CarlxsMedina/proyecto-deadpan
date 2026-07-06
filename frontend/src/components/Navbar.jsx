@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
+import { Search, User, Heart, ShoppingBag } from 'lucide-react';
 
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
@@ -15,36 +16,37 @@ const Navbar = () => {
 
     return (
         <nav className="navbar">
-            <Link to="/" className="nav-brand">ProyectoDeadpan</Link>
+            <Link to="/" className="nav-brand">
+                DEADPAM<span className="nav-brand-dot">.</span>
+            </Link>
             <div className="nav-links">
-                <Link to="/">Inicio</Link>
-                <Link to="/catalog">Catálogo</Link>
-                <Link to="/contact">Contáctanos</Link>
+                <Link to="/catalog">Shop</Link>
+                <Link to="#">Historia</Link>
+                <Link to="#">Filosofía</Link>
+                <Link to="#">Proceso</Link>
+                <Link to="/contact">Contacto</Link>
+            </div>
+            <div className="nav-icons">
+                <button aria-label="Buscar"><Search size={20} strokeWidth={2} /></button>
                 {user ? (
-                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                        <span style={{ color: 'var(--primary)' }}>{user.username}</span>
-                        <button className="btn-secondary" onClick={handleLogout}>Salir</button>
-                    </div>
+                    <button onClick={handleLogout} aria-label="Cerrar sesión" title={user.username}>
+                        <User size={20} strokeWidth={2} />
+                    </button>
                 ) : (
-                    <Link to="/login" className="btn-primary">Iniciar Sesión</Link>
+                    <Link to="/login" aria-label="Iniciar Sesión">
+                        <User size={20} strokeWidth={2} />
+                    </Link>
                 )}
-                <button 
-                    onClick={toggleCart} 
-                    style={{ 
-                        background: 'transparent', 
-                        border: '1px solid var(--primary)', 
-                        color: 'white', 
-                        padding: '0.5rem 1rem', 
-                        borderRadius: '20px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem'
-                    }}
-                >
-                    🛒 Carrito 
+                <button aria-label="Favoritos"><Heart size={20} strokeWidth={2} /></button>
+                <button onClick={toggleCart} aria-label="Carrito" style={{ position: 'relative' }}>
+                    <ShoppingBag size={20} strokeWidth={2} />
                     {cartItems.length > 0 && (
-                        <span style={{ background: 'var(--primary)', color: 'black', padding: '2px 8px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                        <span style={{ 
+                            position: 'absolute', top: '-8px', right: '-8px', 
+                            background: '#cc0000', color: 'white', 
+                            fontSize: '0.7rem', padding: '2px 6px', 
+                            borderRadius: '50%', fontWeight: 'bold' 
+                        }}>
                             {cartItems.length}
                         </span>
                     )}
@@ -55,3 +57,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
